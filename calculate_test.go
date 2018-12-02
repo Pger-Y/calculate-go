@@ -35,9 +35,15 @@ func TestCal(t *testing.T) {
 	exps = append(exps, "1/(2+3)-6")             // -5.8
 	exps = append(exps, "2/0")                   //error
 	exps = append(exps, "2-(2+3)")               // -3
-	exps = append(exps, "(2+(2+3*6)*2)*4-(2+3)") // -3
-	exps = append(exps, "(((2-22)+6)*3)*(2+3)")  // -3
+	exps = append(exps, "(2+(2+3*6)*2)*4-(2+3)") // 163
+	exps = append(exps, "(((2-22)+6)*3)*(2+3)")  // -210
+	exps = append(exps, "100.00-100+20")         // 20
+	exps = append(exps, "100/100+20")            // 21
+	exps = append(exps, "100.00/100/2*2+10")     // 11
+	exps = append(exps, "100.00/100*2+20")       // 22
+	exps = append(exps, "100.00/100*2-20")       // -18
 	for _, exp := range exps {
-		Calculate(exp)
+		p := parser{}
+		fmt.Println(p.Eval(exp))
 	}
 }

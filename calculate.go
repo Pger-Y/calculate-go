@@ -128,19 +128,21 @@ func (p *parser) Eval(exp string) (int, float64, error) {
 			dec = 0.1
 			i++
 		case b == MUL || b == MULx || b == MULX || b == DIV:
+			is_p = false
 			p.pushCache()
-			p.PushOp(b)
 			if vop {
 				p.cal()
 			}
+			p.PushOp(b)
 			vop = true
 			i++
 		case b == ADD || b == SUB:
+			is_p = false
 			p.pushCache()
-			if vop {
+			if p.canCal() {
 				p.cal()
-				vop = false
 			}
+			vop = false
 			p.PushOp(b)
 			i++
 		case b == StartOfExp:
@@ -162,8 +164,8 @@ func (p *parser) Eval(exp string) (int, float64, error) {
 			i++
 
 		}
-		//fmt.Println("value:", p.stack_v)
-		//fmt.Println("op:", p.stack_op)
+		//		fmt.Println("value:", p.stack_v)
+		//		fmt.Println("op:", p.stack_op)
 	}
 	v, err := p.calAll()
 

@@ -42,6 +42,7 @@ func TestCal(t *testing.T) {
 	exps = append(exps, "100.00/100/2*2+10")     // 11
 	exps = append(exps, "100.00/100*2+20")       // 22
 	exps = append(exps, "100.00/100*2-20")       // -18
+	exps = append(exps, "12×2+2")                // 26
 	for _, exp := range exps {
 		p := parser{}
 		fmt.Println(p.Eval(exp))

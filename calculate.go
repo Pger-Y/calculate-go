@@ -5,18 +5,33 @@ import (
 )
 
 const (
-	ADD        = '+'
-	SUB        = '-'
-	MUL        = '*'
-	MULx       = 'x'
-	MULX       = 'X'
-	MULP       = '×'
-	DIV        = '/'
-	StartOfExp = '('
-	EndOfExp   = ')'
+	ADD        = "+"
+	SUB        = "-"
+	MUL        = "*"
+	MULx       = "x"
+	MULX       = "X"
+	MULP       = "×"
+	DIV        = "/"
+	StartOfExp = "("
+	EndOfExp   = ")"
 )
 
-func cal(a float64, op byte, b float64) (float64, error) {
+var (
+	DIGMAP = map[string]struct{}{
+		"0": struct{}{},
+		"1": struct{}{},
+		"2": struct{}{},
+		"3": struct{}{},
+		"4": struct{}{},
+		"5": struct{}{},
+		"6": struct{}{},
+		"7": struct{}{},
+		"8": struct{}{},
+		"9": struct{}{},
+	}
+)
+
+func cal(a float64, op string, b float64) (float64, error) {
 	switch op {
 	case ADD:
 		return a + b, nil
@@ -91,46 +106,55 @@ func (p *parser) PopValue() (float64, error) {
 	}
 }
 
-func (p *parser) PushOp(o byte) error {
+func (p *parser) PushOp(o string) error {
 	return p.stack_op.Push(o)
 }
 
-func (p *parser) PopOp() (byte, error) {
+func (p *parser) PopOp() (string, error) {
 	op, err := p.stack_op.Pop()
 	if err == nil {
-		return op.(byte), nil
+		return op.(string), nil
 	} else {
-		return 0, err
+		return "", err
 	}
 }
 
+func isDigit(s string) bool {
+	_, ok := DIGMAP[s]
+	return ok
+}
+
 func (p *parser) Eval(exp string) (int, float64, error) {
-	l := len(exp)
+	//l := len(exp)
+	exp_rune := []rune(exp)
+	l := len(exp_rune)
 	var is_p, vop bool
 	var dec float64
 	i := 0
 	for i < l {
-		b := byte(exp[i])
+		b := string(exp_rune[i])
+		//fmt.Println(b)
 		switch {
-		case b >= '0' && b <= '9':
+		//case b >= "0" && b <= "9":
+		case isDigit(b):
 			if is_p {
-				p.cache_v = p.cache_v + (float64(b)-48)*dec
+				p.cache_v = p.cache_v + (float64(b[0])-48)*dec
 				dec = dec * 0.1
 			} else {
-				p.cache_v = p.cache_v*10 + float64(b) - 48
+				p.cache_v = p.cache_v*10 + float64(b[0]) - 48
 			}
 			if i == l-1 {
 				p.pushCache()
 			}
 			i++
-		case b == '.':
+		case b == ".":
 			if is_p != false {
 				return 0, 0, fmt.Errorf("Too many points")
 			}
 			is_p = true
 			dec = 0.1
 			i++
-		case b == MUL || b == MULx || b == MULX || b == DIV:
+		case b == MUL || b == MULx || b == MULX || b == DIV || b == MULP:
 			is_p = false
 			p.pushCache()
 			if vop {

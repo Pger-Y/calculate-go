@@ -10,6 +10,7 @@ const (
 	MUL        = '*'
 	MULx       = 'x'
 	MULX       = 'X'
+	MULP       = '×'
 	DIV        = '/'
 	StartOfExp = '('
 	EndOfExp   = ')'
@@ -26,6 +27,8 @@ func cal(a float64, op byte, b float64) (float64, error) {
 	case MULX:
 		return a * b, nil
 	case MULx:
+		return a * b, nil
+	case MULP:
 		return a * b, nil
 	case DIV:
 		if b == 0 {
